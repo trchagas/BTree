@@ -104,7 +104,7 @@ void junta(No* no, int i){
 }
 
 void remove_nao_folha(No* no, int i){
-    int k = no->chaves[i];
+    int val = no->chaves[i];
 
     if(no->filhos[i]->n_chaves >= no->grau_min){
         int predecessor = procura_predecessor(no, i);
@@ -118,7 +118,7 @@ void remove_nao_folha(No* no, int i){
     }
     else{
         junta(no, i);
-        remove_no(no->filhos[i], k);
+        remove_no(no->filhos[i], val);
     }
 }
 
@@ -235,36 +235,36 @@ void separa_filho(No* no, int i, No* no2){
     no->n_chaves+=1;
 }
 
-void insere_nao_cheio(No* no, int k){
+void insere_nao_cheio(No* no, int val){
     int i = no->n_chaves-1;
 
     if(no->folha){
-        while(i >= 0 && no->chaves[i] > k){
+        while(i >= 0 && no->chaves[i] > val){
             no->chaves[i+1] = no->chaves[i];
             i--;
         }
 
-        no->chaves[i+1] = k;
+        no->chaves[i+1] = val;
         no->n_chaves+=1;
     }
     else{
-        while(i >= 0 && no->chaves[i] > k)
+        while(i >= 0 && no->chaves[i] > val)
             i--;
         
         if(no->filhos[i+1]->n_chaves == 2*no->grau_min-1){
             separa_filho(no, i+1, no->filhos[i+1]);
 
-            if(no->chaves[i+1] < k)
+            if(no->chaves[i+1] < val)
                 i++;
         }
-        insere_nao_cheio(no->filhos[i+1], k);
+        insere_nao_cheio(no->filhos[i+1], val);
     }
 }
 
-void insere_arv(Arvore* arv, int k){
+void insere_arv(Arvore* arv, int val){
     if(arv->raiz == NULL){
         arv->raiz = cria_no(arv->grau_min, true);
-        arv->raiz->chaves[0] = k;
+        arv->raiz->chaves[0] = val;
         arv->raiz->n_chaves = 1;
     }
     else{
@@ -275,14 +275,14 @@ void insere_arv(Arvore* arv, int k){
             separa_filho(novo, 0, arv->raiz);
 
             int i = 0;
-            if(novo->chaves[0] < k)
+            if(novo->chaves[0] < val)
                 i++;
-            insere_nao_cheio(novo->filhos[i], k);
+            insere_nao_cheio(novo->filhos[i], val);
 
             arv->raiz = novo;
         }
         else
-            insere_nao_cheio(arv->raiz, k);
+            insere_nao_cheio(arv->raiz, val);
     }
 }
 
@@ -291,34 +291,34 @@ void atravessa_no(No* no){
     for(i = 0; i<no->n_chaves; i++){
         if(!no->folha)
             atravessa_no(no->filhos[i]);
-        printf("%d\n", no->chaves[i]);
+        printf("%d ", no->chaves[i]);
     }
 
     if(!no->folha)
         atravessa_no(no->filhos[i]);
 }
 
-No* busca_no(No* no, int k){
+No* busca_no(No* no, int val){
     int i = 0;
-    while(i < no->n_chaves && k > no->chaves[i])
+    while(i < no->n_chaves && val > no->chaves[i])
         i++;
     
-    if(no->chaves[i] == k)
+    if(no->chaves[i] == val)
         return no;
     
     if(no->folha)
         return NULL;
     
-    return busca_no(no->filhos[i], k);
+    return busca_no(no->filhos[i], val);
 }
 
-void remove_arv(Arvore* arv, int k){
+void remove_arv(Arvore* arv, int val){
     if(!arv->raiz){
         printf("Arvore vazia\n");
         return;
     }
 
-    remove_no(arv->raiz, k);
+    remove_no(arv->raiz, val);
 
     if(arv->raiz->n_chaves==0){
         No* temp = arv->raiz;
